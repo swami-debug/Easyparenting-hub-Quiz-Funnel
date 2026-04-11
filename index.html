@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conscious Parenting Quiz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div class="screen active" id="screen-welcome">
+        <div class="welcome-layout">
+            <div class="welcome-left">
+                <div class="brand-badge">Conscious Parenting</div>
+                <h1 class="welcome-title">Discover Your <span class="gradient-text">Parenting Style</span></h1>
+                <p class="welcome-desc">Answer honestly — there are no right or wrong answers. This quiz will help you understand your strengths and growth areas as a parent.</p>
+                <div class="welcome-info">
+                    <div class="info-item">
+                        <span class="info-icon">&#9201;</span>
+                        <span>3–4 minutes</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">&#9745;</span>
+                        <span>29 Questions</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">&#10084;</span>
+                        <span>Personalised Report</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="app.start()">Discover Your Parenting Style</button>
+                <p class="welcome-tagline">Trusted by thousands of mothers on their conscious parenting journey</p>
+            </div>
+            <div class="welcome-right">
+                <div class="welcome-visual">
+                    <span class="visual-emoji">&#x1F469;&#x200D;&#x1F467;&#x200D;&#x1F466;</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div class="screen" id="screen-quiz">
+        <div class="quiz-wrapper">
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-info">
+                    <span class="progress-section" id="progressSection"></span>
+                    <span class="progress-count" id="progressCount"></span>
+                </div>
+            </div>
+            <div id="quiz-content"></div>
+            <div class="quiz-nav">
+                <button class="btn btn-secondary" id="btnBack" onclick="app.prevQuestion()">&#8592; Back</button>
+                <button class="btn btn-primary" id="btnNext" onclick="app.nextQuestion()">Next &#8594;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div class="screen" id="screen-results">
+        <div class="results-container" id="resultsContainer"></div>
+    </div>
+
+    <script src="quizData.js"></script>
+    <script src="scoring.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
