@@ -143,14 +143,9 @@ body {
 }
 
 .welcome-visual {
-    width: 280px;
-    height: 280px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-mint-light), var(--accent-gold-light));
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 20px 60px rgba(77, 184, 154, 0.15);
 }
 
 .visual-emoji {
@@ -158,9 +153,8 @@ body {
 }
 
 .welcome-logo {
-    max-width: 220px;
+    max-width: 280px;
     height: auto;
-    border-radius: 50%;
 }
 
 @keyframes floating {
