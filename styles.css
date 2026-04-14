@@ -158,6 +158,11 @@ body {
     font-size: 6rem;
 }
 
+.welcome-logo {
+    max-width: 220px;
+    height: auto;
+}
+
 @keyframes floating {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-12px); }
