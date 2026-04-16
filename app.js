@@ -278,13 +278,25 @@ const app = {
             this.currentStepIndex++;
             this.renderStep();
         } else {
-            this.showResults();
+            this.showContactCapture();
         }
     },
 
-    nextQuestion() { this.nextStep(); },
+    nextQuestion() {
+        if (this._contactMode) {
+            this.showResults();
+            return;
+        }
+        this.nextStep();
+    },
 
     prevQuestion() {
+        if (this._contactMode) {
+            this._contactMode = false;
+            this.direction = 'left';
+            this.renderStep();
+            return;
+        }
         if (this.currentStepIndex > 0) {
             this.direction = 'left';
             this.currentStepIndex--;
@@ -292,10 +304,121 @@ const app = {
         }
     },
 
+    showContactCapture() {
+        const container = document.getElementById('quiz-content');
+        const btnNext = document.getElementById('btnNext');
+        const btnBack = document.getElementById('btnBack');
+
+        btnBack.style.display = '';
+        btnNext.innerHTML = 'See My Results &#10148;';
+        btnNext.disabled = true;
+
+        // Update progress to 100%
+        document.getElementById('progressFill').style.width = '100%';
+        document.getElementById('progressCount').textContent = '100% Complete';
+        document.getElementById('progressSection').textContent = 'Almost There!';
+
+        const anim = 'slide-in-right';
+        const emailVal = this.answers._email || '';
+        const phoneVal = this.answers._phone || '';
+
+        container.innerHTML = `
+            <div class="question-card ${anim}" id="questionCard">
+                <div class="contact-capture-header">
+                    <span class="contact-icon">&#127881;</span>
+                    <h2 class="question-text">Your report is ready!</h2>
+                    <p class="contact-subtitle">Enter your details below to unlock your personalised parenting report.</p>
+                </div>
+                <div class="input-group" style="margin-bottom: 1rem;">
+                    <label class="input-label">Email Address <span class="required">*</span></label>
+                    <input type="email" class="text-input" id="contactEmail"
+                        placeholder="your@email.com"
+                        value="${this.escapeHtml(emailVal)}" autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Phone Number <span class="optional-label">(optional)</span></label>
+                    <input type="tel" class="text-input" id="contactPhone"
+                        placeholder="+91 98765 43210"
+                        value="${this.escapeHtml(phoneVal)}" autocomplete="tel">
+                </div>
+                <p class="contact-privacy">&#128274; Your information is 100% private and will never be shared.</p>
+            </div>`;
+
+        this.currentScreen = 'contact';
+
+        const emailInput = document.getElementById('contactEmail');
+        const phoneInput = document.getElementById('contactPhone');
+
+        const validateEmail = () => {
+            const email = emailInput.value.trim();
+            this.answers._email = email;
+            this.answers._phone = phoneInput.value.trim();
+            const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            btnNext.disabled = !isValid;
+        };
+
+        emailInput.addEventListener('input', validateEmail);
+        phoneInput.addEventListener('input', validateEmail);
+        emailInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !btnNext.disabled) this.showResults();
+        });
+        phoneInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !btnNext.disabled) this.showResults();
+        });
+
+        // Store original nextQuestion handler and override
+        this._contactMode = true;
+
+        setTimeout(() => emailInput.focus(), 300);
+        validateEmail();
+    },
+
     showResults() {
+        this._contactMode = false;
+        // Save final contact values
+        const emailInput = document.getElementById('contactEmail');
+        const phoneInput = document.getElementById('contactPhone');
+        if (emailInput) this.answers._email = emailInput.value.trim();
+        if (phoneInput) this.answers._phone = phoneInput.value.trim();
+
         this.results = ScoringEngine.calculateResults(this.answers);
+        this.sendToGHL();
         this.renderResults();
         this.showScreen('results');
+    },
+
+    sendToGHL() {
+        const r = this.results;
+        const payload = {
+            name: r.userName,
+            email: this.answers._email || '',
+            phone: this.answers._phone || '',
+            childAge: this.answers['s0q2'] || '',
+            parentStatus: this.answers['s0q3'] || '',
+            totalScore: r.totalScore,
+            maxScore: r.maxScore,
+            scorePercentage: r.percentage,
+            category: r.category.name,
+            strongestArea: r.strongest.title,
+            strongestPercentage: r.strongest.percentage,
+            weakestArea: r.weakest.title,
+            weakestPercentage: r.weakest.percentage,
+            readiness: r.readiness,
+            challenges: r.challenges.join(', '),
+            desires: r.desires.join(', '),
+            tags: r.tags.join(', '),
+            sectionScores: Object.entries(r.sectionScores).map(([key, s]) =>
+                `${s.title}: ${s.percentage}% (${s.status})`
+            ).join(' | ')
+        };
+
+        fetch('https://services.leadconnectorhq.com/hooks/ajGJHXmpR6eGMS0oB59e/webhook-trigger/e30eb87b-512a-40b4-baed-0177d535f071', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).catch(() => {
+            // Silently fail — don't block the user from seeing results
+        });
     },
 
     renderResults() {
