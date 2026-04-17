@@ -144,11 +144,21 @@ const app = {
             step.options.forEach(opt => {
                 const isSel = this.answers[step.id] === opt.value;
                 html += `<div class="option-card ${isSel ? 'selected' : ''}"
-                    onclick="app.selectOption('${step.id}', '${opt.value}', this)">
+                    onclick="app.selectOption('${step.id}', '${opt.value}', this, ${!!opt.hasTextInput})">
                     <span class="option-letter">${opt.label}</span>
                     <span class="option-text">${opt.text}</span>
                     <span class="option-check">&#10003;</span>
                 </div>`;
+                if (opt.hasTextInput) {
+                    const tv = this.answers[step.id + '_other'] || '';
+                    html += `<div class="other-input-wrapper ${isSel ? 'show' : ''}" id="otherInput_${step.id}">
+                        <input type="text" class="text-input other-text-input"
+                            placeholder="Please mention your profession..."
+                            value="${this.escapeHtml(tv)}"
+                            oninput="app.answers['${step.id}_other'] = this.value.trim()"
+                            maxlength="200">
+                    </div>`;
+                }
             });
             html += '</div>';
         }
@@ -178,10 +188,25 @@ const app = {
         return div.innerHTML;
     },
 
-    selectOption(qId, value, el) {
+    selectOption(qId, value, el, hasTextInput) {
         this.answers[qId] = value;
         el.closest('.options-list').querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
         el.classList.add('selected');
+        // Show/hide other input for all options with text input in this list
+        const wrapper = document.getElementById('otherInput_' + qId);
+        if (wrapper) {
+            wrapper.classList.toggle('show', !!hasTextInput);
+            if (hasTextInput) {
+                wrapper.querySelector('input').focus();
+                // Show Next button for "Other" option so user can proceed after typing
+                const btnNext = document.getElementById('btnNext');
+                btnNext.style.display = '';
+                btnNext.disabled = false;
+                btnNext.innerHTML = 'Next &#8594;';
+                document.querySelector('.quiz-nav').style.justifyContent = 'space-between';
+                return;
+            }
+        }
         this.updateNavButtons();
         setTimeout(() => this.nextStep(), 500);
     },
@@ -391,7 +416,8 @@ const app = {
             email: this.answers._email || '',
             phone: this.answers._phone || '',
             childAge: this.getOptionText('s0q2', this.answers['s0q2'] || ''),
-            parentStatus: this.getOptionText('s0q3', this.answers['s0q3'] || ''),
+            ageGroup: this.getOptionText('s0q3', this.answers['s0q3'] || ''),
+            profession: this.getOptionText('s0q4', this.answers['s0q4'] || '') + (this.answers['s0q4_other'] ? ': ' + this.answers['s0q4_other'] : ''),
             totalScore: r.totalScore,
             maxScore: r.maxScore,
             scorePercentage: r.percentage,

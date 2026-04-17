@@ -29,13 +29,24 @@ const quizData = {
                 },
                 {
                     id: 's0q3',
+                    text: 'Your age group is…',
+                    type: 'single',
+                    options: [
+                        { label: 'A', text: '25–34 years', value: 'A' },
+                        { label: 'B', text: '35–44 years', value: 'B' },
+                        { label: 'C', text: '45–54 years', value: 'C' },
+                        { label: 'D', text: '55 or above', value: 'D' }
+                    ]
+                },
+                {
+                    id: 's0q4',
                     text: 'Right now, you are…',
                     type: 'single',
                     options: [
-                        { label: 'A', text: 'A full-time homemaker / parent', value: 'A' },
-                        { label: 'B', text: 'A working professional', value: 'B' },
-                        { label: 'C', text: 'Running a business / self-employed', value: 'C' },
-                        { label: 'D', text: 'In a transition phase', value: 'D' }
+                        { label: 'A', text: 'Homemaker', value: 'A' },
+                        { label: 'B', text: 'Salaried Professional', value: 'B' },
+                        { label: 'C', text: 'Business Owner', value: 'C' },
+                        { label: 'D', text: 'Other', value: 'D', hasTextInput: true }
                     ]
                 }
             ]
