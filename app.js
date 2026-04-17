@@ -432,7 +432,8 @@ const app = {
             tags: r.tags.join(', '),
             sectionScores: Object.entries(r.sectionScores).map(([key, s]) =>
                 `${s.title}: ${s.percentage}% (${s.status})`
-            ).join(' | ') + '\n\n--- QUIZ ANSWERS ---\n' + this._formatAllAnswers()
+            ).join(' | '),
+            notes: this._formatAllAnswers()
         };
 
         fetch('https://services.leadconnectorhq.com/hooks/ajGJHXmpR6eGMS0oB59e/webhook-trigger/e30eb87b-512a-40b4-baed-0177d535f071', {
