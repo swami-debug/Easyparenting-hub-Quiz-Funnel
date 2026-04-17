@@ -406,7 +406,8 @@ const app = {
             tags: r.tags.join(', '),
             sectionScores: Object.entries(r.sectionScores).map(([key, s]) =>
                 `${s.title}: ${s.percentage}% (${s.status})`
-            ).join(' | ')
+            ).join(' | '),
+            quizAnswers: this._formatAllAnswers()
         };
 
         fetch('https://services.leadconnectorhq.com/hooks/ajGJHXmpR6eGMS0oB59e/webhook-trigger/e30eb87b-512a-40b4-baed-0177d535f071', {
@@ -416,6 +417,37 @@ const app = {
         }).catch(() => {
             // Silently fail — don't block the user from seeing results
         });
+    },
+
+    _formatAllAnswers() {
+        const lines = [];
+        quizData.sectionOrder.forEach(sectionKey => {
+            const section = quizData.sections[sectionKey];
+            lines.push(`--- ${section.title} ---`);
+            section.questions.forEach(q => {
+                const answer = this.answers[q.id];
+                if (!answer) return;
+                let answerText = '';
+                if (q.type === 'text') {
+                    answerText = answer;
+                } else if (q.type === 'multi' && Array.isArray(answer)) {
+                    answerText = answer.map(v => {
+                        const opt = q.options.find(o => o.value === v);
+                        return opt ? opt.text : v;
+                    }).join(', ');
+                    if (this.answers[q.id + '_other']) {
+                        answerText += ` (Other: ${this.answers[q.id + '_other']})`;
+                    }
+                } else {
+                    const opt = q.options ? q.options.find(o => o.value === answer) : null;
+                    answerText = opt ? opt.text : answer;
+                }
+                lines.push(`Q: ${q.text}`);
+                lines.push(`A: ${answerText}`);
+                lines.push('');
+            });
+        });
+        return lines.join('\n');
     },
 
     renderResults() {
