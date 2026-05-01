@@ -629,7 +629,7 @@ const app = {
                         <p><em>A Small Request From My Heart</em></p>
                         <p>When you come… come with openness. And please stay till the end. Because what I will share towards the end… can truly help you give your child what they deserve — and help you become the calm, confident mother you already want to be.</p>
                     </div>
-                    <button class="btn btn-cta" onclick="window.open('https://riddhideorah.in/thank-you-webinar-g/', '_blank')">Join the Live Masterclass</button>
+                    <button class="btn btn-cta" onclick="window.open('https://riddhideorah.in/supermom-ty/', '_blank')">Join the Live Masterclass</button>
                 </div>
             </div>
 
